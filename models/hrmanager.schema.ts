@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { Role } from '../enums/employee.enum';
+import { ApprovalPriority, HRManagerAction, HRManagerPermission } from '../enums/hrmanager.enum';
 
 export type HRManagerDocument = HydratedDocument<HRManager>;
 
@@ -52,17 +53,18 @@ export class HRManager {
 
   @Prop({
     type: [String],
+    enum: Object.values(HRManagerPermission),
     default: [
-      'view_employee_profiles',
-      'edit_employee_profiles',
-      'approve_correction_requests',
-      'deactivate_employees',
-      'assign_roles',
-      'search_employees',
-      'view_audit_logs',
+      HRManagerPermission.VIEW_EMPLOYEE_PROFILES,
+      HRManagerPermission.EDIT_EMPLOYEE_PROFILES,
+      HRManagerPermission.APPROVE_CORRECTION_REQUESTS,
+      HRManagerPermission.DEACTIVATE_EMPLOYEES,
+      HRManagerPermission.ASSIGN_ROLES,
+      HRManagerPermission.SEARCH_EMPLOYEES,
+      HRManagerPermission.VIEW_AUDIT_LOGS,
     ],
   })
-  permissions: string[];
+  permissions: HRManagerPermission[];
 
   // Department Assignment (if HR Manager is assigned to specific departments)
   @Prop({
@@ -82,7 +84,10 @@ export class HRManager {
   @Prop({
     type: [
       {
-        action: String, // e.g., 'profile_edit', 'correction_approval', 'role_assignment'
+        action: {
+          type: String,
+          enum: Object.values(HRManagerAction),
+        },
         targetEmployeeId: String,
         targetField: String, // Field that was modified
         oldValue: MongooseSchema.Types.Mixed,
@@ -95,7 +100,7 @@ export class HRManager {
     default: [],
   })
   actionHistory: {
-    action: string;
+    action: HRManagerAction;
     targetEmployeeId: string;
     targetField?: string;
     oldValue?: any;
@@ -114,7 +119,11 @@ export class HRManager {
         fieldName: String,
         requestedValue: String,
         submittedAt: Date,
-        priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
+        priority: {
+          type: String,
+          enum: Object.values(ApprovalPriority),
+          default: ApprovalPriority.MEDIUM,
+        },
       },
     ],
     default: [],
@@ -125,7 +134,7 @@ export class HRManager {
     fieldName: string;
     requestedValue: string;
     submittedAt: Date;
-    priority: 'Low' | 'Medium' | 'High';
+    priority: ApprovalPriority;
   }[];
 
   // System Configuration Access (US-E7-04)
