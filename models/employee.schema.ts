@@ -75,10 +75,10 @@ export class Employee {
 
   //job and department (Org Structure input)
   @Prop()
-  department?: string; // From Org Structure module
+  department?: string; //import from rom Org Structure module
 
   @Prop()
-  position?: string; //From Org Structure module
+  position?: string; //import from org Structure module
 
   @Prop({
     type: String,
@@ -90,7 +90,7 @@ export class Employee {
   @Prop()
   hireDate?: Date;
 
-  // 📈 Performance Data (from Performance module)
+  //Performance Data (import from Performance module)
   @Prop({
     type: [
       {
@@ -107,6 +107,7 @@ export class Employee {
     score: number;
   }[];
 
+  //(??)
   // 🛠 Correction Requests (US-E6-02)
   @Prop({
     type: [
