@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
-import { EmploymentType } from '../enums/employee.enum';
+import { EmploymentType, CorrectionStatus, Role } from '../enums/employee.enum';
 
 export type EmployeeDocument = HydratedDocument<Employee>
 
@@ -80,6 +80,7 @@ export class Employee {
   @Prop()
   position?: string; //import from org Structure module
 
+  //full time/part time/...
   @Prop({
     type: String,
     enum: EmploymentType,
@@ -108,40 +109,40 @@ export class Employee {
   }[];
 
   //(??)
-  // 🛠 Correction Requests (US-E6-02)
+  //correction requests (US-E6-02)
   @Prop({
-    type: [
-      {
-        fieldName: String,
-        oldValue: String,
-        requestedValue: String,
-        status: {
-          type: String,
-          enum: ['Pending', 'Approved', 'Rejected'],
-          default: 'Pending',
-        },
-        requestedAt: { type: Date, default: Date.now },
-        reviewedAt: { type: Date },
+  type: [
+    {
+      fieldName: String,
+      oldValue: String,
+      requestedValue: String,
+      status: {
+        type: String,
+        enum: Object.values(CorrectionStatus),
+        default: CorrectionStatus.PENDING,
       },
-    ],
-    default: [],
-  })
-  pendingCorrectionRequests: {
-    fieldName: string;
-    oldValue: string;
-    requestedValue: string;
-    status: 'Pending' | 'Approved' | 'Rejected';
-    requestedAt: Date;
-    reviewedAt?: Date;
-  }[];
+      requestedAt: { type: Date, default: Date.now },
+      reviewedAt: { type: Date },
+    },
+  ],
+  default: [],
+})
+pendingCorrectionRequests: {
+  fieldName: string;
+  oldValue: string;
+  requestedValue: string;
+  status: CorrectionStatus;
+  requestedAt: Date;
+  reviewedAt?: Date;
+}[];
 
-  // 🧾 Role & Metadata (BR 20a)
+  //role (BR 20a)
   @Prop({
-    type: String,
-    enum: ['Employee', 'Manager', 'HR'],
-    default: 'Employee',
+  type: String,
+  enum: Object.values(Role),
+  default: Role.EMPLOYEE,
   })
-  role: 'Employee' | 'Manager' | 'HR';
+  role: Role;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
