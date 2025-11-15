@@ -9,7 +9,7 @@ export class StructuralChangeRequest {
 
   @Prop({ type: Types.ObjectId, ref: 'Position', required: true })
   targetPosition: Types.ObjectId;
-  //What position the manager wants to modify.
+  //what position the manager wants to modify.
 
   @Prop({ enum: ['CHANGE_REPORTING_LINE', 'MOVE_TO_DEPARTMENT'], required: true })
   requestType: string;
