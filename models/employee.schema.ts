@@ -1,58 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 import { EmploymentType, CorrectionStatus, Role } from '../enums/employee.enum';
+import { BasePerson } from 'person.schema';
 
 export type EmployeeDocument = HydratedDocument<Employee>
 
 @Schema({ timestamps: true })
-export class Employee {
+export class Employee extends BasePerson {
   //basics
   @Prop({ required: true, unique: true })
   employeeId: string;
-
-  @Prop({ required: true })
-  firstName: string;
-
-  @Prop({ required: true })
-  lastName: string;
-
-  @Prop({ required: true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ })
-  emailOfficial: string;
-
-  @Prop()
-  emailPersonal?: string;
-
-  //contact and personal info
-  @Prop({ required: true })
-  phoneNumber: string;
-
-  @Prop({
-    type: {
-      street: String,
-      city: String,
-      country: String,
-      postalCode: String,
-    },
-    required: true,
-  })
-  address: {
-    street: string;
-    city: string;
-    country: string;
-    postalCode: string;
-  };
-
-  @Prop()
-  bio?: string;
-
-  @Prop({required: true})
-  profilePhoto: string; //url - filename
-
-  @Prop({required: true})
-  dateOfBirth: Date;
-
-  @Prop()
-  gender?: string;
 
   //education (BR 3h)
   @Prop({

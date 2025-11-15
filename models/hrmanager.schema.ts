@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { Role } from '../enums/employee.enum';
 import { ApprovalPriority, HRManagerAction, HRManagerPermission } from '../enums/hrmanager.enum';
+import { BasePerson } from 'person.schema';
 
 export type HRManagerDocument = HydratedDocument<HRManager>;
 
@@ -18,29 +19,13 @@ export type HRManagerDocument = HydratedDocument<HRManager>;
  * All actions are audit-trailed per BR 22
  */
 @Schema({ timestamps: true })
-export class HRManager {
+export class HRManager extends BasePerson{
   // Authentication & Identification
   @Prop({ required: true, unique: true })
   hrManagerId: string;
 
   @Prop({ required: true, unique: true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ })
   email: string;
-
-  @Prop({ required: true })
-  password: string; // Should be hashed before saving
-
-  // Personal Information
-  @Prop({ required: true })
-  firstName: string;
-
-  @Prop({ required: true })
-  lastName: string;
-
-  @Prop({ required: true })
-  phoneNumber: string;
-
-  @Prop()
-  profilePhoto?: string; // URL or filename
 
   // Role & Permissions (US-E7-05)
   @Prop({
@@ -51,20 +36,23 @@ export class HRManager {
   })
   role: Role;
 
-  @Prop({
-    type: [String],
-    enum: Object.values(HRManagerPermission),
-    default: [
-      HRManagerPermission.VIEW_EMPLOYEE_PROFILES,
-      HRManagerPermission.EDIT_EMPLOYEE_PROFILES,
-      HRManagerPermission.APPROVE_CORRECTION_REQUESTS,
-      HRManagerPermission.DEACTIVATE_EMPLOYEES,
-      HRManagerPermission.ASSIGN_ROLES,
-      HRManagerPermission.SEARCH_EMPLOYEES,
-      HRManagerPermission.VIEW_AUDIT_LOGS,
-    ],
-  })
-  permissions: HRManagerPermission[];
+  //Status
+  @Prop({ default: true }) isActive: boolean;
+
+  // @Prop({
+  //   type: [String],
+  //   enum: Object.values(HRManagerPermission),
+  //   default: [
+  //     HRManagerPermission.VIEW_EMPLOYEE_PROFILES,
+  //     HRManagerPermission.EDIT_EMPLOYEE_PROFILES,
+  //     HRManagerPermission.APPROVE_CORRECTION_REQUESTS,
+  //     HRManagerPermission.DEACTIVATE_EMPLOYEES,
+  //     HRManagerPermission.ASSIGN_ROLES,
+  //     HRManagerPermission.SEARCH_EMPLOYEES,
+  //     HRManagerPermission.VIEW_AUDIT_LOGS,
+  //   ],
+  // })
+  // permissions: HRManagerPermission[];
 
   // Department Assignment (if HR Manager is assigned to specific departments)
   @Prop({
@@ -72,10 +60,6 @@ export class HRManager {
     default: [],
   })
   assignedDepartments?: string[]; // Department IDs from Org Structure module
-
-  // Status
-  @Prop({ default: true })
-  isActive: boolean;
 
   @Prop()
   lastLoginAt?: Date;
